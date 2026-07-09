@@ -1,0 +1,8 @@
+.env
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.DS_Store
+.ipynb_checkpoints/
+# NOTE: charts/ PNGs are committed on purpose — they are a required deliverable.
