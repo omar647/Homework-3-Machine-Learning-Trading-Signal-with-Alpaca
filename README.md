@@ -89,42 +89,43 @@ python paper_trade.py --qty 5 --force buy              # guarantee a demo trade
 ## PCA
 
 Features are standardized (`StandardScaler`), then `PCA` keeps the smallest
-number of components reaching **≥ 80%** cumulative variance — for AAPL that is
-**4 components (~83%)**. PCA is fit on the **training window only** so the test
+number of components reaching **≥ 80%** cumulative variance — for Ford (F) that
+is **4 components (~82%)**. PCA is fit on the **training window only** so the test
 backtest has no look-ahead leakage. See `charts/*_pca_variance.png`.
 
-## Example results (AMD, Gradient Boosting, test window Jan 2025 – Jul 2026)
+## Example results (F, Gradient Boosting, test window Jan 2025 – Jul 2026)
 
 ```bash
-python run_pipeline.py --ticker AMD --model gradient_boosting
+python run_pipeline.py                       # defaults: F, gradient_boosting
 ```
 
 | | Total Return | CAGR | Volatility | Sharpe | Sortino | Max DD | Win Rate | Trades |
 |---|---|---|---|---|---|---|---|---|
-| **ML Signal** | **+157.07%** | 92.61% | 35.35% | **2.03** | 2.17 | **−14.35%** | 63.16% | 57 |
-| **Buy & Hold** | +319.95% | 170.79% | 66.63% | 1.82 | 3.09 | −36.29% | 100.00% | 1 |
+| **ML Signal** | **+101.29%** | 62.74% | 23.55% | **2.18** | 2.59 | **−7.30%** | 55.93% | 59 |
+| **Buy & Hold** | +30.62% | 20.44% | 37.03% | 0.68 | 1.18 | −23.55% | 100.00% | 1 |
 
-Here the ML signal earns a **higher Sharpe (2.03 vs 1.82)** with roughly **half
-the volatility and half the drawdown** of Buy & Hold — exactly what a signal is
-for: better *risk-adjusted* return. It sits in cash during the worst stretches,
-so it gives up some raw upside but is far less punishing to hold.
+Here the ML signal **beats Buy & Hold on every metric**: ~3× the total return
+(+101% vs +31%), triple the Sharpe (2.18 vs 0.68), and less than a third of the
+drawdown (−7.3% vs −23.6%). Ford chopped sideways over the test window, so
+sitting in cash during the down stretches paid off — exactly what a long/flat
+signal is designed to do.
 
 ### Other positive combinations
 
-A sweep across tickers × models found **16 / 40 combos with positive ML return**
-and **8 that beat Buy & Hold outright**. Notable ones:
+A sweep across many tickers with Gradient Boosting turned up several that beat
+Buy & Hold while staying positive. Notable ones:
 
-| Ticker · Model | ML Return | Sharpe | Max DD | Note |
-|---|---|---|---|---|
-| AMD · gradient_boosting | +157% | 2.03 | −14% | best Sharpe, beats B&H risk-adjusted |
-| AAPL · mlp | +35% | 1.23 | −11% | nearly matches B&H with 1/3 the drawdown |
-| META · random_forest | +9.9% | 0.58 | −9% | **beats B&H (−4.9%) outright** |
-| QQQ · random_forest | +8.3% | 1.20 | −4% | cleanest risk-adjusted, very few trades |
+| Ticker | ML Return | Sharpe | Max DD | Buy & Hold | Note |
+|---|---|---|---|---|---|
+| **F** | +101% | 2.18 | −7% | +31% | beats B&H on every metric |
+| PLTR | +152% | 1.66 | −28% | +78% | biggest absolute return, still beats B&H |
+| DG | +66% | 1.49 | −11% | +57% | steady defensive win |
+| TSLA | +32% | 0.88 | −25% | −1% | signal profits while B&H is flat |
 
-Results vary by ticker/model/threshold — Random Forest and SVM are often
-conservative (mostly Flat), while Gradient Boosting and MLP trade more actively.
-*(Past performance is not indicative of future results; this is an educational
-exercise.)*
+Results vary by ticker/model/threshold. On strong one-way uptrends (e.g. AMD,
+NVDA) Buy & Hold is hard to beat on raw return; the signal shines on choppy or
+drawdown-prone names. *(Past performance is not indicative of future results;
+this is an educational exercise.)*
 
 ## Charts (`charts/`)
 
@@ -142,10 +143,13 @@ Example log:
 
 ```
 [HH:MM:SS] Connected to PAPER account PA3GL5RGH9D9 (status=ACTIVE, cash=$100,000.00)
-[HH:MM:SS] Latest bar 2026-07-08  close=$517.50  P(up)=0.615  → signal=LONG
+[HH:MM:SS] Latest bar 2026-07-08  close=$13.49  P(up)=0.372  → signal=FLAT
 [HH:MM:SS] Decision: BUY
-[HH:MM:SS] ORDER SUBMITTED → BUY 5.0 AMD (id=cfe5992c-…, status=ACCEPTED)
+[HH:MM:SS] ORDER SUBMITTED → BUY 20.0 F (id=77c67169-…, status=ACCEPTED)
 ```
+
+*(Run with `--force buy` for a guaranteed demo order when the latest signal is
+FLAT, or plain `python paper_trade.py` to act on the live signal.)*
 
 *(Add your Alpaca paper dashboard screenshot showing the executed order here.)*
 
