@@ -151,10 +151,11 @@ FLAT, or plain `python3 paper_trade.py` to act on the live signal.)*
 
 ## Video
 
-*(Add your YouTube unlisted link or in-repo video file here.)* The video shows
-the code running, the charts (equity, drawdown, PCA variance), the backtest
-metrics, the Alpaca paper dashboard, a paper trade being executed, and the
-spoken statement: **"This is paper trading only — no real money is used."**
+[![Watch the demo](https://img.youtube.com/vi/-NZ54breupE/hqdefault.jpg)](https://youtu.be/-NZ54breupE)
+[![Watch the demo](https://img.youtube.com/vi/CVu4DqwVwTI/hqdefault.jpg)](https://youtu.be/CVu4DqwVwTI)
+
+
+**"This is paper trading only — no real money is used."**
 
 ---
 
