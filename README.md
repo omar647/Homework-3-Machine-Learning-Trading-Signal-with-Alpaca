@@ -56,11 +56,12 @@ cp .env.example .env          # add your Alpaca PAPER keys (they start with "PK"
 **Offline pipeline** (downloads data, prints metrics, saves charts to `charts/`):
 
 ```bash
-python run_pipeline.py --ticker AAPL
-python run_pipeline.py --ticker QQQ --model gradient_boosting --threshold 0.6
+python run_pipeline.py                       # defaults: AMD, gradient_boosting
+python run_pipeline.py --ticker QQQ --threshold 0.6
 ```
 
-Models: `random_forest`, `logistic`, `gradient_boosting`, `svm`, `mlp`.
+Default model is **Gradient Boosting**; also available: `random_forest`,
+`logistic`, `svm`, `mlp` (via `--model`).
 
 **Report notebook** (charts inline):
 
@@ -71,8 +72,8 @@ jupyter notebook ml_report.ipynb
 **Paper trading demo** (submits a PAPER order to Alpaca):
 
 ```bash
-python paper_trade.py --ticker AAPL --qty 5              # follow the model signal
-python paper_trade.py --ticker AAPL --qty 5 --force buy  # guarantee a demo trade
+python paper_trade.py --qty 5                          # defaults: AMD, follow the signal
+python paper_trade.py --qty 5 --force buy              # guarantee a demo trade
 ```
 
 ## Features
@@ -141,9 +142,9 @@ Example log:
 
 ```
 [HH:MM:SS] Connected to PAPER account PA3GL5RGH9D9 (status=ACTIVE, cash=$100,000.00)
-[HH:MM:SS] Latest bar 2026-07-08  close=$313.33  P(up)=0.556  → signal=FLAT
+[HH:MM:SS] Latest bar 2026-07-08  close=$517.50  P(up)=0.615  → signal=LONG
 [HH:MM:SS] Decision: BUY
-[HH:MM:SS] ORDER SUBMITTED → BUY 5.0 AAPL (id=f2211dfb-…, status=ACCEPTED)
+[HH:MM:SS] ORDER SUBMITTED → BUY 5.0 AMD (id=cfe5992c-…, status=ACCEPTED)
 ```
 
 *(Add your Alpaca paper dashboard screenshot showing the executed order here.)*

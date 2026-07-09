@@ -52,10 +52,10 @@ def submit(client: TradingClient, symbol: str, qty: float, side: OrderSide):
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="Alpaca PAPER trading demo for the ML signal")
-    ap.add_argument("--ticker", default="AAPL", help="Ticker to trade")
+    ap.add_argument("--ticker", default="AMD", help="Ticker to trade")
     ap.add_argument("--qty", type=float, default=5, help="Share quantity per order")
     ap.add_argument("--years", type=int, default=5, help="Years of history for the model")
-    ap.add_argument("--model", default="random_forest", help="ML model to use")
+    ap.add_argument("--model", default="gradient_boosting", help="ML model to use")
     ap.add_argument("--threshold", type=float, default=0.60, help="Long if P(up) > threshold")
     ap.add_argument("--force", choices=["auto", "buy", "sell"], default="auto",
                     help="auto = follow the model; buy/sell = force an order for the demo")

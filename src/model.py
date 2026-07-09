@@ -23,7 +23,7 @@ from .features import FEATURE_COLUMNS, build_features
 from .pca import PCAModel, fit_pca
 
 PROB_THRESHOLD = 0.60
-DEFAULT_MODEL = "random_forest"
+DEFAULT_MODEL = "gradient_boosting"
 
 
 def _make_estimator(name: str):
