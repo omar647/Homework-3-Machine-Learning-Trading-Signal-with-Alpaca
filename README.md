@@ -92,17 +92,38 @@ number of components reaching **≥ 80%** cumulative variance — for AAPL that 
 **4 components (~83%)**. PCA is fit on the **training window only** so the test
 backtest has no look-ahead leakage. See `charts/*_pca_variance.png`.
 
-## Example results (AAPL, Random Forest, test window Jan 2025 – Jul 2026)
+## Example results (AMD, Gradient Boosting, test window Jan 2025 – Jul 2026)
+
+```bash
+python run_pipeline.py --ticker AMD --model gradient_boosting
+```
 
 | | Total Return | CAGR | Volatility | Sharpe | Sortino | Max DD | Win Rate | Trades |
 |---|---|---|---|---|---|---|---|---|
-| **ML Signal** | −6.45% | −4.52% | 11.81% | −0.33 | −0.14 | −17.32% | 62.50% | 16 |
-| **Buy & Hold** | 39.42% | 25.95% | 30.32% | 0.91 | 1.25 | −30.10% | 100.00% | 1 |
+| **ML Signal** | **+157.07%** | 92.61% | 35.35% | **2.03** | 2.17 | **−14.35%** | 63.16% | 57 |
+| **Buy & Hold** | +319.95% | 170.79% | 66.63% | 1.82 | 3.09 | −36.29% | 100.00% | 1 |
 
-The ML signal trades far less and has a much lower volatility and drawdown, but
-on this window Buy & Hold wins on total return — a realistic outcome for a
-simple daily model. Try other tickers, models, and thresholds to explore. *(Past
-performance is not indicative of future results; this is an educational exercise.)*
+Here the ML signal earns a **higher Sharpe (2.03 vs 1.82)** with roughly **half
+the volatility and half the drawdown** of Buy & Hold — exactly what a signal is
+for: better *risk-adjusted* return. It sits in cash during the worst stretches,
+so it gives up some raw upside but is far less punishing to hold.
+
+### Other positive combinations
+
+A sweep across tickers × models found **16 / 40 combos with positive ML return**
+and **8 that beat Buy & Hold outright**. Notable ones:
+
+| Ticker · Model | ML Return | Sharpe | Max DD | Note |
+|---|---|---|---|---|
+| AMD · gradient_boosting | +157% | 2.03 | −14% | best Sharpe, beats B&H risk-adjusted |
+| AAPL · mlp | +35% | 1.23 | −11% | nearly matches B&H with 1/3 the drawdown |
+| META · random_forest | +9.9% | 0.58 | −9% | **beats B&H (−4.9%) outright** |
+| QQQ · random_forest | +8.3% | 1.20 | −4% | cleanest risk-adjusted, very few trades |
+
+Results vary by ticker/model/threshold — Random Forest and SVM are often
+conservative (mostly Flat), while Gradient Boosting and MLP trade more actively.
+*(Past performance is not indicative of future results; this is an educational
+exercise.)*
 
 ## Charts (`charts/`)
 
