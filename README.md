@@ -13,7 +13,7 @@ environment.
   plus **log returns** and **rolling mean & std** — 29 features total.
 - Standardizes features and runs **PCA**, keeping the components that explain
   **≥ 80%** of the variance.
-- Trains an **ML classifier** (Random Forest by default) on the PCA components.
+- Trains an **ML classifier** (Gradient Boosting by default) on the PCA components.
   Target = *next-day return > 0*. Signal = **Long** if P(up) > 0.60, else **Flat**.
 - **Backtests** the signal on a held-out test window ($100k, long-only, no
   leverage, no shorting) and compares it to **Buy & Hold**.
@@ -47,19 +47,23 @@ homework3-ml-signal/
 ## Setup
 
 ```bash
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 cp .env.example .env          # add your Alpaca PAPER keys (they start with "PK")
 ```
+
+> On macOS use `python3` / `pip3` (not `python`).
 
 ## Run
 
 **Offline pipeline** (downloads data, prints metrics, saves charts to `charts/`):
 
 ```bash
-python run_pipeline.py                       # defaults: AMD, gradient_boosting
-python run_pipeline.py --ticker QQQ --threshold 0.6
+python3 run_pipeline.py                       # defaults: SPY, gradient_boosting
+python3 run_pipeline.py --ticker AAPL         # choose any ticker
+python3 run_pipeline.py --ticker QQQ --threshold 0.6
 ```
 
+The user chooses the ticker with `--ticker` (AAPL, MSFT, SPY, QQQ, NVDA, …).
 Default model is **Gradient Boosting**; also available: `random_forest`,
 `logistic`, `svm`, `mlp` (via `--model`).
 
@@ -72,8 +76,9 @@ jupyter notebook ml_report.ipynb
 **Paper trading demo** (submits a PAPER order to Alpaca):
 
 ```bash
-python paper_trade.py --qty 5                          # defaults: AMD, follow the signal
-python paper_trade.py --qty 5 --force buy              # guarantee a demo trade
+python3 paper_trade.py --qty 5                          # follow the live signal
+python3 paper_trade.py --ticker NVDA --qty 5            # choose any ticker
+python3 paper_trade.py --qty 5 --force buy              # guarantee a demo trade
 ```
 
 ## Features
@@ -89,43 +94,34 @@ python paper_trade.py --qty 5 --force buy              # guarantee a demo trade
 ## PCA
 
 Features are standardized (`StandardScaler`), then `PCA` keeps the smallest
-number of components reaching **≥ 80%** cumulative variance — for Ford (F) that
-is **4 components (~82%)**. PCA is fit on the **training window only** so the test
+number of components reaching **≥ 80%** cumulative variance — for SPY that is
+**4 components (~83%)**. PCA is fit on the **training window only** so the test
 backtest has no look-ahead leakage. See `charts/*_pca_variance.png`.
 
-## Example results (F, Gradient Boosting, test window Jan 2025 – Jul 2026)
+## Example results (SPY, Gradient Boosting, test window Jan 2025 – Jul 2026)
 
 ```bash
-python run_pipeline.py                       # defaults: F, gradient_boosting
+python3 run_pipeline.py                       # defaults: SPY, gradient_boosting
 ```
 
 | | Total Return | CAGR | Volatility | Sharpe | Sortino | Max DD | Win Rate | Trades |
 |---|---|---|---|---|---|---|---|---|
-| **ML Signal** | **+101.29%** | 62.74% | 23.55% | **2.18** | 2.59 | **−7.30%** | 55.93% | 59 |
-| **Buy & Hold** | +30.62% | 20.44% | 37.03% | 0.68 | 1.18 | −23.55% | 100.00% | 1 |
+| **ML Signal** | −1.56% | −1.09% | 9.22% | −0.07 | −0.04 | **−10.42%** | 63.64% | 44 |
+| **Buy & Hold** | +23.00% | 15.46% | 17.24% | 0.92 | 1.20 | −18.98% | 100.00% | 1 |
 
-Here the ML signal **beats Buy & Hold on every metric**: ~3× the total return
-(+101% vs +31%), triple the Sharpe (2.18 vs 0.68), and less than a third of the
-drawdown (−7.3% vs −23.6%). Ford chopped sideways over the test window, so
-sitting in cash during the down stretches paid off — exactly what a long/flat
-signal is designed to do.
+Over this window SPY trended steadily higher, so Buy & Hold wins on total
+return — a realistic outcome for a long/flat signal on an index in a bull run.
+The signal does keep **about half the volatility and a much smaller drawdown**
+(−10.4% vs −19.0%) by sitting in cash on weak days. Different tickers, models,
+and thresholds give very different results — try a few:
 
-### Other positive combinations
+```bash
+python3 run_pipeline.py --ticker AAPL --model mlp
+python3 run_pipeline.py --ticker QQQ  --model gradient_boosting
+```
 
-A sweep across many tickers with Gradient Boosting turned up several that beat
-Buy & Hold while staying positive. Notable ones:
-
-| Ticker | ML Return | Sharpe | Max DD | Buy & Hold | Note |
-|---|---|---|---|---|---|
-| **F** | +101% | 2.18 | −7% | +31% | beats B&H on every metric |
-| PLTR | +152% | 1.66 | −28% | +78% | biggest absolute return, still beats B&H |
-| DG | +66% | 1.49 | −11% | +57% | steady defensive win |
-| TSLA | +32% | 0.88 | −25% | −1% | signal profits while B&H is flat |
-
-Results vary by ticker/model/threshold. On strong one-way uptrends (e.g. AMD,
-NVDA) Buy & Hold is hard to beat on raw return; the signal shines on choppy or
-drawdown-prone names. *(Past performance is not indicative of future results;
-this is an educational exercise.)*
+*(Past performance is not indicative of future results; this is an educational
+exercise.)*
 
 ## Charts (`charts/`)
 
@@ -143,13 +139,13 @@ Example log:
 
 ```
 [HH:MM:SS] Connected to PAPER account PA3GL5RGH9D9 (status=ACTIVE, cash=$100,000.00)
-[HH:MM:SS] Latest bar 2026-07-08  close=$13.49  P(up)=0.372  → signal=FLAT
+[HH:MM:SS] Latest bar 2026-07-08  close=$745.28  P(up)=0.104  → signal=FLAT
 [HH:MM:SS] Decision: BUY
-[HH:MM:SS] ORDER SUBMITTED → BUY 20.0 F (id=77c67169-…, status=ACCEPTED)
+[HH:MM:SS] ORDER SUBMITTED → BUY 10.0 SPY (id=38602b55-…, status=ACCEPTED)
 ```
 
 *(Run with `--force buy` for a guaranteed demo order when the latest signal is
-FLAT, or plain `python paper_trade.py` to act on the live signal.)*
+FLAT, or plain `python3 paper_trade.py` to act on the live signal.)*
 
 *(Add your Alpaca paper dashboard screenshot showing the executed order here.)*
 

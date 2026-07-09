@@ -31,7 +31,7 @@ CHARTS_DIR = os.path.join(os.path.dirname(__file__), "charts")
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="ML trading-signal pipeline (Alpaca data)")
-    ap.add_argument("--ticker", default="F", help="Ticker (AAPL, MSFT, SPY, QQQ, NVDA, …)")
+    ap.add_argument("--ticker", default="SPY", help="Ticker (AAPL, MSFT, SPY, QQQ, NVDA, …)")
     ap.add_argument("--years", type=int, default=5, help="Years of history (>=5)")
     ap.add_argument("--model", default="gradient_boosting",
                     help="random_forest | logistic | gradient_boosting | svm | mlp")
